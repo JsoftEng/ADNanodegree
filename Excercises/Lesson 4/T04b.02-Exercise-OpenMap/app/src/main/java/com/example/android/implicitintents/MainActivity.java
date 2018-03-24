@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void onClickOpenWebpageButton(View v) {
-        String url = "http://www.google.com";
-
-        openWebPage(url);
+        String urlAsString = "http://www.udacity.com";
+        openWebPage(urlAsString);
     }
 
     /**
@@ -49,7 +48,16 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void onClickOpenAddressButton(View v) {
-        Toast.makeText(this, "TODO: Open a map when this button is clicked", Toast.LENGTH_SHORT).show();
+        String address = "1600 Amphitheatre Parkway, CA";
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("geo")
+                .path("0,0")
+                .query(address);
+
+        Uri addressURI = builder.build();
+
+        showMap(addressURI);
     }
 
     /**
@@ -78,13 +86,42 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void openWebPage(String url){
-        Uri resource = Uri.parse(url);
+    /**
+     * This method fires off an implicit Intent to open a webpage.
+     *
+     * @param url Url of webpage to open. Should start with http:// or https:// as that is the
+     *            scheme of the URI expected with this Intent according to the Common Intents page
+     */
+    private void openWebPage(String url) {
+        /*
+         * We wanted to demonstrate the Uri.parse method because its usage occurs frequently. You
+         * could have just as easily passed in a Uri as the parameter of this method.
+         */
+        Uri webpage = Uri.parse(url);
 
-        Intent intent = new Intent(Intent.ACTION_VIEW,resource);
+        /*
+         * Here, we create the Intent with the action of ACTION_VIEW. This action allows the user
+         * to view particular content. In this case, our webpage URL.
+         */
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+
+        /*
+         * This is a check we perform with every implicit Intent that we launch. In some cases,
+         * the device where this code is running might not have an Activity to perform the action
+         * with the data we've specified. Without this check, in those cases your app would crash.
+         */
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    public void showMap(Uri map) {
+        Intent intent = new Intent(Intent.ACTION_VIEW,map);
 
         if (intent.resolveActivity(getPackageManager()) != null){
             startActivity(intent);
         }
     }
+
+
 }
